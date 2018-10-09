@@ -2064,8 +2064,8 @@
     if (window.createjs !== undefined && window.createjs.createCanvas !== undefined) {
       c = window.createjs.createCanvas();
     }
-    if (HTMLCanvasElement) {
-      c = new HTMLCanvasElement();
+    if (c === undefined) {
+      c = document.createElement("canvas");
     }
     if (c !== undefined) {
       c.width = width;
@@ -4859,7 +4859,7 @@
   }();
   var Touch = Touch = {
     isSupported: function isSupported() {
-      return !!("ontouchstart" in window || window.navigator["msPointerEnabled"] && window.navigator["msMaxTouchPoints"] > 0 || window.navigator["pointerEnabled"] && window.navigator["maxTouchPoints"] > 0);
+      return !!("ontouchstart" in window || window.MSPointerEvent && window.navigator.msMaxTouchPoints > 0 || window.PointerEvent && window.navigator.maxTouchPoints > 0);
     },
     enable: function enable(stage) {
       var singleTouch = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -4878,7 +4878,7 @@
       };
       if ("ontouchstart" in window) {
         this._IOS_enable(stage);
-      } else if (window.navigator["msPointerEnabled"] || window.navigator["pointerEnabled"]) {
+      } else if (window.PointerEvent || window.MSPointerEvent) {
         this._IE_enable(stage);
       }
       return true;
@@ -4889,7 +4889,7 @@
       }
       if ("ontouchstart" in window) {
         this._IOS_disable(stage);
-      } else if (window.navigator["msPointerEnabled"] || window.navigator["pointerEnabled"]) {
+      } else if (window.PointerEvent || window.MSPointerEvent) {
         this._IE_disable(stage);
       }
       delete stage.__touch;
@@ -4956,7 +4956,7 @@
       var f = stage.__touch.f = function(e) {
         return _this2._IE_handleEvent(stage, e);
       };
-      if (window.navigator["pointerEnabled"] === undefined) {
+      if (window.PointerEvent === undefined) {
         canvas.addEventListener("MSPointerDown", f, false);
         window.addEventListener("MSPointerMove", f, false);
         window.addEventListener("MSPointerUp", f, false);
@@ -4977,7 +4977,7 @@
     },
     _IE_disable: function _IE_disable(stage) {
       var f = stage.__touch.f;
-      if (window.navigator["pointerEnabled"] === undefined) {
+      if (window.PointerEvent === undefined) {
         window.removeEventListener("MSPointerMove", f, false);
         window.removeEventListener("MSPointerUp", f, false);
         window.removeEventListener("MSPointerCancel", f, false);

@@ -1900,8 +1900,8 @@ function createCanvas(width = 1, height = 1) {
   if (window.createjs !== undefined && window.createjs.createCanvas !== undefined) {
     c = window.createjs.createCanvas();
   }
-  if (HTMLCanvasElement) {
-    c = new HTMLCanvasElement();
+  if (c === undefined) {
+    c = document.createElement("canvas");
   }
   if (c !== undefined) {
     c.width = width;
@@ -4488,7 +4488,7 @@ class ButtonHelper {
 
 var Touch = Touch = {
   isSupported() {
-    return !!("ontouchstart" in window || window.navigator["msPointerEnabled"] && window.navigator["msMaxTouchPoints"] > 0 || window.navigator["pointerEnabled"] && window.navigator["maxTouchPoints"] > 0);
+    return !!("ontouchstart" in window || window.MSPointerEvent && window.navigator.msMaxTouchPoints > 0 || window.PointerEvent && window.navigator.maxTouchPoints > 0);
   },
   enable(stage, singleTouch = false, allowDefault = false) {
     if (!stage || !stage.canvas || !this.isSupported()) {
@@ -4505,7 +4505,7 @@ var Touch = Touch = {
     };
     if ("ontouchstart" in window) {
       this._IOS_enable(stage);
-    } else if (window.navigator["msPointerEnabled"] || window.navigator["pointerEnabled"]) {
+    } else if (window.PointerEvent || window.MSPointerEvent) {
       this._IE_enable(stage);
     }
     return true;
@@ -4516,7 +4516,7 @@ var Touch = Touch = {
     }
     if ("ontouchstart" in window) {
       this._IOS_disable(stage);
-    } else if (window.navigator["msPointerEnabled"] || window.navigator["pointerEnabled"]) {
+    } else if (window.PointerEvent || window.MSPointerEvent) {
       this._IE_disable(stage);
     }
     delete stage.__touch;
@@ -4567,7 +4567,7 @@ var Touch = Touch = {
   _IE_enable(stage) {
     let canvas = stage.canvas;
     let f = stage.__touch.f = (e => this._IE_handleEvent(stage, e));
-    if (window.navigator["pointerEnabled"] === undefined) {
+    if (window.PointerEvent === undefined) {
       canvas.addEventListener("MSPointerDown", f, false);
       window.addEventListener("MSPointerMove", f, false);
       window.addEventListener("MSPointerUp", f, false);
@@ -4588,7 +4588,7 @@ var Touch = Touch = {
   },
   _IE_disable(stage) {
     let f = stage.__touch.f;
-    if (window.navigator["pointerEnabled"] === undefined) {
+    if (window.PointerEvent === undefined) {
       window.removeEventListener("MSPointerMove", f, false);
       window.removeEventListener("MSPointerUp", f, false);
       window.removeEventListener("MSPointerCancel", f, false);
